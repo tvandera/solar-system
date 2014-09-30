@@ -1,15 +1,10 @@
 
 function Well(x,M,R){
-	this.x = x;
-	this.M = M;
-	this.R = R;
+	this.x = x; // position (x,y)
+	this.M = M; // gravitational mass
+	this.R = R; // radius
 }
 Well.prototype = {
-	getAcceleration: function(pos){
-		var r = pos.subtract(this.x);
-		var r_len = r.euclidLength();
-		return r.scale(-this.M/(r_len*r_len/2));
-	},
 	isInside: function(pos){
 		return (pos.subtract(this.x).euclidLength()-this.R)<1;
 	},

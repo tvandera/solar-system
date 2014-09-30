@@ -1,11 +1,33 @@
 
+ // Jupiter (69,911 km / 43,441 miles) – 1,120% the size of Earth
+ // Saturn (58,232 km / 36,184 miles) – 945% the size of Earth
+ // Uranus (25,362 km / 15,759 miles) – 400% the size of Earth
+ // Neptune (24,622 km / 15,299 miles) – 388% the size of Earth
+ // Earth (6,371 km / 3,959 miles)
+ // Venus (6,052 km / 3,761 miles) – 95% the size of Earth
+ // Mars (3,390 km / 2,460 miles) – 53% the size of Earth
+ // Mercury (2,440 km / 1,516 miles) – 38% the size of Earth
+
+var planets = [ "jupiter", "saturn", "uranus", "neptune", "earth", "venus", "mars", "mercury" ];
+var sizes = [ 11.2, 9.45, 4.00, 3.88, 1.0, 0.95, 0.53, 0.38 ];
+var images = new Array();
+
 function Canvas(id){
 	this.canvas = document.getElementById(id);
+
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight - 200;
+
 	this.ctx = this.canvas.getContext('2d');
 	this.width = this.canvas.width;
 	this.height = this.canvas.height;
-	this.fill_color = "#FFF";
-	this.stroke_color = "#000";
+	this.fill_color = "orange";
+	this.stroke_color = "yellow";
+
+        for(i = 0; i < planets.length; i++) {
+            images[i] = new Image();
+            images[i].src = planets[i] + ".jpg";
+        }
 }
 Canvas.prototype={
 	center: function(){
@@ -22,18 +44,18 @@ Canvas.prototype={
 	},
 	clear: function(){
 		this.ctx.clearRect(0, 0, this.width, this.height);
-		this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.fillStyle = this.fill_color;
-		this.ctx.fillRect(0,0,this.width,this.height);
-		this.ctx.restore();
 	},
+        planet : function(p,r){
+            this.ctx.drawImage(images[5], p.elementAt(1), p.elementAt(2), r, r);
+        },
 	circle: function(p,r){
 		this.ctx.save();
 		this.ctx.beginPath();
 		this.ctx.strokeStyle = this.stroke_color;
+		this.ctx.fillStyle = this.fill_color;
 		this.ctx.moveTo(p.elementAt(1)+r,p.elementAt(2));
-		this.ctx.arc(p.elementAt(1), p.elementAt(2), r, 0, 2*PI, false);
+		this.ctx.arc(p.elementAt(1), p.elementAt(2), r, 0, 2*PI, true);
+		this.ctx.fill();
 		this.ctx.stroke();
 		this.ctx.restore();
 	},
@@ -46,7 +68,7 @@ Canvas.prototype={
 		this.ctx.stroke();
 		this.ctx.restore();
 	},
-	ellipse: function(a,b,r){
+	ellipse: function(a,b,r,c){
 		var a_b = a.subtract(b);
 		var q = a_b.scale( 1+(r/a_b.euclidLength()) );
 
@@ -68,7 +90,7 @@ Canvas.prototype={
 		
 		this.ctx.save();
 		this.ctx.beginPath();
-		this.ctx.fillStyle = this.fill_color;
+		this.ctx.fillStyle = c;
 		this.ctx.moveTo(b1.elementAt(1),b1.elementAt(2));
 		this.ctx.bezierCurveTo(c1.elementAt(1),c1.elementAt(2),c2.elementAt(1),c2.elementAt(2)  ,a1.elementAt(1),a1.elementAt(2));
 		this.ctx.bezierCurveTo(c3.elementAt(1),c3.elementAt(2),c4.elementAt(1),c4.elementAt(2)  ,b1.elementAt(1),b1.elementAt(2));

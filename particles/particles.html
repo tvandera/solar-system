@@ -35,30 +35,25 @@
 
 </head>
 
-<body onload="init()">
-	<canvas id="canvas" width="790px" height="500px">
-		<div class='no_canvas'>
-			<strong>Sorry, It looks as though your browser does not support the canvas tag...</strong> If you can, I suggest that you should try firefox or Safari.
-		</div>
+<body onload="init()" background="space.jpg"/>
+	<canvas id="canvas" style="
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    ">
 	</canvas><br>
-	<table style='margin: 0 auto;text-align:center;'>
+	<table style='margin: 0 auto; text-align:center;background-color: #eee;'>
 		<tr>
-			<td><select id='select'>
-				<option value='particle'>Particle</option>
-				<option value='well'>Well</option>
-			</select>
-			</td>
-
-			
+			<td><input type="radio" name='select' value='particle'>Particle</td>
 			<td><input type='button' value='Random Well' onclick='system.addWell()'/></td>
 			<td><input type='button' value='Random Particle' onclick='system.addParticle()'/></td>
-			<td><input type='checkbox' id='collision' onclick='setCollision()'>Well Collision</input></td>
 		</tr>
 		<tr>
-			<td>&nbsp;</td>
-			<td><input type='button' value='Remove Well' onclick='system.dropWell()'/></td>
+			<td><input type="radio" name='select' value='well'>Well</td>
+                        <td><input type='button' value='Remove Well' onclick='system.dropWell()'/></td>
 			<td><input type='button' value='Remove Particle' onclick='system.dropParticle()'/></td>
-			<td><input type='checkbox' id='decay' onclick='setDecay()'>Particle Drag</input></td>
 		</tr>
 	</table>
 	<div id='output'></div>

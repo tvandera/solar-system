@@ -7,15 +7,13 @@ var GM = 8000;
 var MAX_WR = 40;
 var MIN_WR = 10;
 var WR = 10;
-var PR = 5;
+var PR = 20;
 
 /* VARIABLES */
 var canvas;
 var system;
 var timer;
 var mouse_down = false;
-var collision = false;
-var decay = false;
 var initial_position = null;
 var mouse_position = null;
 var mouse_type;
@@ -27,25 +25,16 @@ function init(){
 	initial_position = null;
 	mouse_position = null;
 	
-	setCollision();
-	setDecay();
-	
 	system.addWell(canvas.center(),MIN_WR);
 	
 	system.addParticle(canvas.center().add([0,-100]),canvas.center().add([-4.5,-100]));
 	system.addParticle(canvas.center().add([0,+100]),canvas.center().add([+4.5,+100]));
-	/* d
-	var d1;
-	d1 = (new Date()).getTime();
-	for(var i=0; i<2000; i++){
-		run();
-	}
-	outpl((new Date()).getTime()-d1);
-	*/
+
 	timer = setInterval(run,1/DT);
 }
 function run(){
 	canvas.clear();
+
 	system.update();
 	if(mouse_down && initial_position != null){
 		if(mouse_type == "particle"){
@@ -70,15 +59,6 @@ function reset(){
 function stop(){
 	clearInterval(timer);
 }
-function setCollision(){
-	collision = document.getElementById('collision').checked;
-}
-function setDecay(){
-	decay = document.getElementById('decay').checked;
-}
-
-
-
 function ParticleSystem(){
 	this.wells = new Array();
 	this.particles = new Array();
@@ -105,13 +85,21 @@ ParticleSystem.prototype = {
 			this.particles.pop();
 		}
 	},
+
+        /* for particle p:
+         *   for each well:
+         *      update force vector 'a' based on
+         *         position of p
+         *         size of well
+         */
 	accumulateForces:function(p){
 		var a = $V([0,0]);
 		for(var i=0; this.wells[i]; i++){
-			if(collision && this.wells[i].isInside(p.getPosition())){
-				return null;
-			}
-			a = a.add(this.wells[i].getAcceleration(p.getPosition()));
+                    var well = this.wells[i];
+                    var pos = p.getPosition(); 
+                    var r = pos.subtract(well.x);
+                    var r_len = r.euclidLength();
+		    a = a.add(r.scale(-well.M/(r_len*r_len/2)));
 		}
 		return a;
 	},
@@ -119,17 +107,12 @@ ParticleSystem.prototype = {
 		for(var i=0;this.wells[i];i++){
 			this.wells[i].draw();
 		}
-		var not_dead = new Array();
 		for(var i=0; this.particles[i]; i++){
-			var a = this.accumulateForces(this.particles[i]);
-			if(a != null){
-				this.particles[i].setAcceleration(a);
-				this.particles[i].update();
-				this.particles[i].draw();
-				not_dead.push(this.particles[i]);
-			}
+                    var a = this.accumulateForces(this.particles[i]);
+                    this.particles[i].setAcceleration(a);
+                    this.particles[i].update();
+                    this.particles[i].draw();
 		}
-		this.particles = not_dead;
 	},
 };
 
@@ -146,13 +129,24 @@ function getMouseCoords(event){
 	}
 	return null;
 }
+
+function getRadioButtonValue(name) {
+    var radios = document.getElementsByName(name);
+
+    for (var i = 0, length = radios.length; i < length; i++) {
+        if (radios[i].checked) {
+            return radios[i].value;
+        }
+    }
+}
+
 document.onmousedown = function(event){
 	var mc=getMouseCoords(event); 
 	mouse_down = true;
 	initial_position = null;
 	if(mc != null && canvas.isInside(mc)){
 		mouse_down = true;
-		if(document.getElementById('select').value == 'well'){
+		if(getRadioButtonValue('select') == 'well'){
 			initial_position = mc;
 			mouse_position = mc;
 			mouse_type = "well";
@@ -166,7 +160,7 @@ document.onmousedown = function(event){
 document.onmouseup = function(event){
 	var mc= getMouseCoords(event); 
 	if(mc != null &&canvas.isInside(mc)){
-		if(document.getElementById('select').value != 'well'){
+		if(getRadioButtonValue('select') != 'well'){
 			system.addParticle(initial_position,initial_position.subtract(initial_position.subtract(mc).scale(1/10)));
 		}else{
 			var r = initial_position.subtract(mouse_position).euclidLength();
