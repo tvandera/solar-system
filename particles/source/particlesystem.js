@@ -6,8 +6,10 @@ var DTDT = DT*DT;
 var GM = 8000;
 var MAX_WR = 40;
 var MIN_WR = 10;
-var WR = 10; // scale size of planets and suns
-var PR = 5; // scale distance of planets and suns
+var WR = 10;
+var PR = 5;
+var SZ = 20; // scale size of planets and suns
+var DS = 70; // scale distance of planets and suns
 
 /* VARIABLES */
 var canvas;
@@ -17,6 +19,7 @@ var mouse_down = false;
 var initial_position = null;
 var mouse_position = null;
 var mouse_type;
+var zoom = 1.0;
 
 function init(){
 	canvas = new Canvas('canvas');
@@ -28,8 +31,9 @@ function init(){
 	system.addWell(canvas.center(),MIN_WR);
 	
         for(i=0; i<planets.length; i++) {
-            p1 = canvas.center().add([0,PR*dists[i]]) 
-            p2 = canvas.center().add([-4.5,PR*dists[i]]) 
+            d = DS*Math.log(dists[i]);
+            p1 = canvas.center().add([0,d]) 
+            p2 = canvas.center().add([-4.5,d]) 
             system.addParticle(p1,p2,i);
         }
 
@@ -78,6 +82,9 @@ ParticleSystem.prototype = {
 			this.wells.pop();
 		}
 	},
+        zoom : function(f) {
+                canvas.scale(f);
+        },
 	addParticle: function(x1,x2,p){
 		x1 = x1 || canvas.randomCoordinate();
 		x2 = x2 || canvas.randomCoordinate(x1);

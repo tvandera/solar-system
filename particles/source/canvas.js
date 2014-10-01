@@ -17,13 +17,13 @@ function Canvas(id){
 	this.canvas = document.getElementById(id);
 
         this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight - 200;
+        this.canvas.height = window.innerHeight - 100;
 
 	this.ctx = this.canvas.getContext('2d');
 	this.width = this.canvas.width;
 	this.height = this.canvas.height;
-	this.fill_color = "orange";
-	this.stroke_color = "yellow";
+	this.fill_color = "white";
+	this.stroke_color = "white";
 
         var count = planets.length;
         for(i = 0; i < count; i++) {
@@ -50,15 +50,20 @@ Canvas.prototype={
 	isInside: function(p){
 		return (p.elementAt(1)>0 && p.elementAt(2)>0 && p.elementAt(1) < this.width && p.elementAt(2) < this.height);
 	},
+	scale: function(f){
+		this.ctx.scale(f,f);
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+	},
 	clear: function(){
 		this.ctx.clearRect(0, 0, this.width, this.height);
 	},
         sun : function(p,r){
-            var sz = WR*r;
+            var sz = 2*SZ*Math.log(r/2);
             this.ctx.drawImage(sun, p.elementAt(1) - sz/2, p.elementAt(2) - sz/2, sz, sz);
         },
         planet : function(i,p){
-            var sz = WR*sizes[i];
+            var sz = SZ*Math.log(sizes[i]);
             this.ctx.drawImage(images[i], p.elementAt(1) - sz/2, p.elementAt(2) - sz/2, sz, sz);
         },
 	circle: function(p,r){
