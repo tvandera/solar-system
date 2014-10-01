@@ -8,8 +8,9 @@
  // Mars (3,390 km / 2,460 miles) – 53% the size of Earth
  // Mercury (2,440 km / 1,516 miles) – 38% the size of Earth
 
-var planets = [ "jupiter", "saturn", "uranus", "neptune", "earth", "venus", "mars", "mercury" ];
-var sizes = [ 11.2, 9.45, 4.00, 3.88, 1.0, 0.95, 0.53, 0.38 ];
+var planets = [ "mercury", "mars", "venus", "earth", "neptune", "uranus", "saturn", "jupiter"];
+var sizes = [ 0.3511, 0.8708, 0.9177, 0.4888, 10.2866, 8.6717, 3.6776, 3.5635 ];
+var dists = [ 8.33, 15.57, 21.53, 32.80, 111.99, 205.67, 413.09, 648.10 ];
 var images = new Array();
 
 function Canvas(id){
@@ -24,14 +25,21 @@ function Canvas(id){
 	this.fill_color = "orange";
 	this.stroke_color = "yellow";
 
-        for(i = 0; i < planets.length; i++) {
+        var count = planets.length;
+        for(i = 0; i < count; i++) {
             images[i] = new Image();
-            images[i].src = planets[i] + ".jpg";
+            images[i].src = planets[i] + ".png";
         }
+
+        sun = new Image();
+        sun.src = "sun.png";
 }
 Canvas.prototype={
 	center: function(){
 		return $V([this.width/2,this.height/2]);
+	},
+        randomPlanet: function() {
+		return Math.floor(Math.random() * planets.length);
 	},
 	randomCoordinate: function(){
 		var r1 = (Math.random()<0.5?-Math.random():Math.random());
@@ -45,8 +53,13 @@ Canvas.prototype={
 	clear: function(){
 		this.ctx.clearRect(0, 0, this.width, this.height);
 	},
-        planet : function(p,r){
-            this.ctx.drawImage(images[5], p.elementAt(1), p.elementAt(2), r, r);
+        sun : function(p,r){
+            var sz = WR*r;
+            this.ctx.drawImage(sun, p.elementAt(1) - sz/2, p.elementAt(2) - sz/2, sz, sz);
+        },
+        planet : function(i,p){
+            var sz = WR*sizes[i];
+            this.ctx.drawImage(images[i], p.elementAt(1) - sz/2, p.elementAt(2) - sz/2, sz, sz);
         },
 	circle: function(p,r){
 		this.ctx.save();

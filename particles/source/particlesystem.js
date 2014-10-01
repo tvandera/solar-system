@@ -6,8 +6,8 @@ var DTDT = DT*DT;
 var GM = 8000;
 var MAX_WR = 40;
 var MIN_WR = 10;
-var WR = 10;
-var PR = 20;
+var WR = 10; // scale size of planets and suns
+var PR = 5; // scale distance of planets and suns
 
 /* VARIABLES */
 var canvas;
@@ -27,8 +27,11 @@ function init(){
 	
 	system.addWell(canvas.center(),MIN_WR);
 	
-	system.addParticle(canvas.center().add([0,-100]),canvas.center().add([-4.5,-100]));
-	system.addParticle(canvas.center().add([0,+100]),canvas.center().add([+4.5,+100]));
+        for(i=0; i<planets.length; i++) {
+            p1 = canvas.center().add([0,PR*dists[i]]) 
+            p2 = canvas.center().add([-4.5,PR*dists[i]]) 
+            system.addParticle(p1,p2,i);
+        }
 
 	timer = setInterval(run,1/DT);
 }
@@ -75,10 +78,11 @@ ParticleSystem.prototype = {
 			this.wells.pop();
 		}
 	},
-	addParticle: function(x1,x2){
+	addParticle: function(x1,x2,p){
 		x1 = x1 || canvas.randomCoordinate();
 		x2 = x2 || canvas.randomCoordinate(x1);
-		this.particles.push(new Particle(x1,x2));
+                if (p == undefined) p = canvas.randomPlanet();
+		this.particles.push(new Particle(x1,x2,p));
 	},
 	dropParticle: function(){
 		if(this.particles.length>0){
@@ -161,7 +165,7 @@ document.onmouseup = function(event){
 	var mc= getMouseCoords(event); 
 	if(mc != null &&canvas.isInside(mc)){
 		if(getRadioButtonValue('select') != 'well'){
-			system.addParticle(initial_position,initial_position.subtract(initial_position.subtract(mc).scale(1/10)));
+			system.addParticle(initial_position,initial_position.subtract(initial_position.subtract(mc).scale(1/10))-1);
 		}else{
 			var r = initial_position.subtract(mouse_position).euclidLength();
 			if(r<MIN_WR){

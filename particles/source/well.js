@@ -9,7 +9,6 @@ Well.prototype = {
 		return (pos.subtract(this.x).euclidLength()-this.R)<1;
 	},
 	draw:function(){
-		canvas.circle(this.x, this.R);
-		canvas.circle(this.x, this.R-2);
+                canvas.sun(this.x, this.R);
 	}
 };

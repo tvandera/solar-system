@@ -1,9 +1,9 @@
 
-function Particle(x,old_x) {
+function Particle(x,old_x,p) {
 	this.x = x;
 	this.old_x = old_x;
 	this.a;
-        this.fill_color = 'blue';
+        this.planet = p;
 }
 
 Particle.prototype = {
@@ -20,8 +20,7 @@ Particle.prototype = {
 		this.a = a;
 	},
 	draw: function(){
-		//canvas.ellipse(this.x,this.old_x,PR,this.fill_color);
-                canvas.planet(this.x, PR);
+                canvas.planet(this.planet, this.x, PR);
 	}
 };
 
