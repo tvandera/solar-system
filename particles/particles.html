@@ -4,10 +4,7 @@
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>solar system</title>
-	<meta name="generator" content="TextMate http://macromates.com/">
-	<meta name="author" content="Andrew Hoyer">
-	<!-- Date: 2008-11-12 -->
+	<title>Deeltjes simulator</title>
 	<style type="text/css">
 		body{
 			font-family:georgia;
@@ -37,16 +34,37 @@
 
 <body onload="init()" style="background-image: url('space.jpg'); background-size: 100%;"/>
 	<canvas id="canvas"></canvas><br>
+        <div id="code" style="display: none; position: absolute; left: 10px; top: 10px;">
+        <textarea id="src" rows="15" cols="50">
+            for(var i=0; this.particles[i]; i++){
+                var p = this.particles[i];
+                var a = $V([0,0]);
+                for(var j=0; this.wells[j]; j++){
+                    var well = this.wells[j];
+                    var pos = p.getPosition(); 
+                    var r = pos.subtract(well.x);
+                    var r_len = r.euclidLength();
+                    a = a.add(r.scale(-well.M/(r_len*r_len/2)));
+                }
+                p.setAcceleration(a);
+            }
+        </textarea><br>
+        <input type='button' value='Uitvoeren' onclick='system.customCode(document.getElementById("src").value)'/>
+    </div>
 	<table style='margin: 0 auto; text-align:center;background-color: #eee;'>
 		<tr>
-			<td><input type="radio" name='select' value='particle'>Particle</td>
-			<td><input type='button' value='Random Well' onclick='system.addWell()'/></td>
-			<td><input type='button' value='Random Particle' onclick='system.addParticle()'/></td>
+			<td><input type="radio" name='select' value='particle'>Planeet</td>
+			<td><input type='button' value='Willekeurige Zon' onclick='system.addWell()'/></td>
+			<td><input type='button' value='Willekeurige Planeet' onclick='system.addParticle()'/></td>
+			<td><input type='button' value='Ons Zonnestelsel' onclick='system.solarSystem()'/></td>
+			<td><input type='button' value='Reset' onclick='window.location.reload(false);' /></td>
 		</tr>
 		<tr>
-			<td><input type="radio" name='select' value='well'>Well</td>
-                        <td><input type='button' value='Remove Well' onclick='system.dropWell()'/></td>
-			<td><input type='button' value='Remove Particle' onclick='system.dropParticle()'/></td>
+			<td><input type="radio" name='select' value='well'>Zon</td>
+                        <td><input type='button' value='Verwijder Zon' onclick='system.dropWell()'/></td>
+			<td><input type='button' value='Verwijder Planeet' onclick='system.dropParticle()'/></td>
+			<td><input type='button' value='Verwijder Alles' onclick='system.dropAll()'/></td>
+			<td><input type='button' value='Bekijk Code' onclick='document.getElementById("code").style.display = "block";'/></td>
 		</tr>
 	</table>
 	<div id='output'></div>

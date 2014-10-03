@@ -3,7 +3,7 @@
 var PI = Math.PI;
 var DT = 1/30;
 var DTDT = DT*DT;
-var GM = 8000;
+var GM = 6000;
 var MAX_WR = 40;
 var MIN_WR = 10;
 var WR = 10;
@@ -27,15 +27,9 @@ function init(){
 	mouse_down = false;
 	initial_position = null;
 	mouse_position = null;
-	
-	system.addWell(canvas.center(),MIN_WR);
-	
-        for(i=0; i<planets.length; i++) {
-            d = DS*Math.log(dists[i]);
-            p1 = canvas.center().add([0,d]) 
-            p2 = canvas.center().add([-4.5,d]) 
-            system.addParticle(p1,p2,i);
-        }
+        custom_code = null;
+
+        system.solarSystem();
 
 	timer = setInterval(run,1/DT);
 }
@@ -96,31 +90,51 @@ ParticleSystem.prototype = {
 			this.particles.pop();
 		}
 	},
+	dropAll: function(){
+                this.wells = [];
+                this.particles = [];
+	},
+        solarSystem: function(){
+            this.addWell(canvas.center(),MIN_WR);
 
+            for(i=0; i<planets.length; i++) {
+                d = DS*Math.log(dists[i]);
+                p1 = canvas.center().add([0,d]); 
+                p2 = canvas.center().add([-4.5,d]); 
+                system.addParticle(p1,p2,i);
+            }
+        },
         /* for particle p:
          *   for each well:
          *      update force vector 'a' based on
          *         position of p
          *         size of well
          */
-	accumulateForces:function(p){
-		var a = $V([0,0]);
-		for(var i=0; this.wells[i]; i++){
-                    var well = this.wells[i];
+        customCode:function(c) {
+            this.custom_code = c;
+        },
+	accumulateForces:function(){
+           if (this.custom_code) eval(this.custom_code);
+           else
+                for(var i=0; this.particles[i]; i++){
+                var p = this.particles[i];
+                var a = $V([0,0]);
+                for(var j=0; this.wells[j]; j++){
+                    var well = this.wells[j];
                     var pos = p.getPosition(); 
                     var r = pos.subtract(well.x);
                     var r_len = r.euclidLength();
-		    a = a.add(r.scale(-well.M/(r_len*r_len/2)));
-		}
-		return a;
-	},
+                    a = a.add(r.scale(-well.M/(r_len*r_len/2)));
+                }
+                p.setAcceleration(a);
+            }
+        },
 	update:function(){
+                this.accumulateForces();
 		for(var i=0;this.wells[i];i++){
 			this.wells[i].draw();
 		}
 		for(var i=0; this.particles[i]; i++){
-                    var a = this.accumulateForces(this.particles[i]);
-                    this.particles[i].setAcceleration(a);
                     this.particles[i].update();
                     this.particles[i].draw();
 		}
@@ -172,7 +186,9 @@ document.onmouseup = function(event){
 	var mc= getMouseCoords(event); 
 	if(mc != null &&canvas.isInside(mc)){
 		if(getRadioButtonValue('select') != 'well'){
-			system.addParticle(initial_position,initial_position.subtract(initial_position.subtract(mc).scale(1/10))-1);
+                        x2 =initial_position.subtract(initial_position.subtract(mouse_position).scale(1/10));
+			system.addParticle(initial_position,x2);
+
 		}else{
 			var r = initial_position.subtract(mouse_position).euclidLength();
 			if(r<MIN_WR){
